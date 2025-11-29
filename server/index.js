@@ -1,10 +1,12 @@
 const express = require('express');
-const { PrismaClient } = require('./generated/prisma');
+const { PrismaClient } = require('@prisma/client');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
 const prisma = new PrismaClient();
 const app = express();
+app.use(cors());
 const port = process.env.PORT || 3000;
 const JWT_SECRET = process.env.JWT_SECRET || 'your-development-secret';
 
