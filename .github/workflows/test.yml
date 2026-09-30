@@ -1,0 +1,46 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Server - Install Dependencies
+        run: |
+          cd server
+          DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npm ci
+
+      - name: Server - Check JS Syntax
+        run: |
+          cd server
+          find . -name "*.js" -not -path "*/node_modules/*" | xargs -n1 node --check
+
+      - name: Server - Prisma Validate
+        run: |
+          cd server
+          DATABASE_URL="postgresql://dummy:dummy@localhost:5432/dummy" npx prisma validate
+
+      - name: Server - Run Tests
+        run: |
+          cd server
+          if npm run test 2>&1 | grep -q "no test specified"; then echo "Ignored default test script error"; exit 0; else npm test; fi
+
+      - name: Client - Install Dependencies
+        run: |
+          cd client
+          npm ci --legacy-peer-deps
+
+      - name: Client - Check JS Syntax
+        run: |
+          cd client
+          find . -name "*.js" -not -path "*/node_modules/*" | xargs -n1 node --check
