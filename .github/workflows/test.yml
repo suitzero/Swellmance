@@ -33,7 +33,7 @@ jobs:
       - name: Server - Run Tests
         run: |
           cd server
-          if npm run test 2>&1 | grep -q "no test specified"; then echo "Ignored default test script error"; exit 0; else npm test; fi
+          npm test
 
       - name: Client - Install Dependencies
         run: |
